@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /$
+Allow: /categories
+Allow: /stars
+Allow: /search
+Allow: /video/
+
+# Disallow admin and API routes
+Disallow: /_next/
+Disallow: /api/
+Disallow: /*/edit/
+Disallow: /*/delete/
+Disallow: /*/admin/
+
+# Sitemap location (important for SEO)
+Sitemap: https://xmilfnut.com/sitemap.xml
+
+# Host declaration (optional, improves crawl accuracy)
+Host: https://xmilfnut.com
