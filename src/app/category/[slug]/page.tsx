@@ -61,7 +61,7 @@
       const apiCategory = originalCategory || displayName;
     
       const apiUrl = API_ENDPOINTS.CATEGORY_VIDEOS(apiCategory, page);
-
+     
       const response = await fetch(apiUrl, {
         next: { revalidate: 3600 },
         headers: {
@@ -87,25 +87,27 @@
         throw new Error("API returned invalid JSON/HTML");
       }
 
-     if (!response.ok || response.status !== 202) {
-  console.error("API Error:", {
-    status: response.status,
-    statusText: response.statusText,
-    data,
-  });
-  return {
-    videos: [],
-    categoryName: displayName,
-    displayName,
-    currentPage: 1,
-    totalPages: 1,
-  };
-}
+     if (!response.ok) {
+       console.error("API Error:", {
+         status: response.status,
+         statusText: response.statusText,
+         data,
+       });
+       return {
+         videos: [],
+         categoryName: displayName,
+         displayName,
+         currentPage: 1,
+         totalPages: 1,
+       };
+     }
+
+     console.log("API Response:", { status: response.status, data });
 
       return {
         videos: Array.isArray(data.data) ? data.data : [],
-        categoryName: apiCategory, // Use the original case for the API
-        displayName, // Use the formatted name for display
+        categoryName: apiCategory, 
+        displayName, 
         currentPage: data.currentPage || page,
         totalPages: data.totalPages || 1,
       };
@@ -148,6 +150,8 @@
         </div>
       );
     }
+
+    console.log(videos)
 
     return (
       <div className="container-fluid py-3 px-2 px-sm-3 px-md-4 text-center">
