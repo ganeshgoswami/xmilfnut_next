@@ -68,8 +68,7 @@ async function getRelatedVideos(category: string): Promise<Video[]> {
 }
 
 export async function generateMetadata(
-  { params }: { params: { id: string; title: string } },
-  parent: ResolvingMetadata
+  { params }: { params: { id: string; title: string } }
 ): Promise<Metadata> {
   const video = await getVideo(params.id);
 

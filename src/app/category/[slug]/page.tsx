@@ -71,29 +71,36 @@
 
       // Read text to safely handle non-JSON responses
       const text = await response.text();
-      let data: any;
+      let data: {
+        data?: Video[];
+        total?: number;
+        currentPage?: number;
+        totalPages?: number;
+        category?: string;
+        displayName?: string;
+      };
 
       try {
         data = JSON.parse(text);
-      } catch {
+      } catch (error) {
         console.error("Invalid JSON from API:", text.slice(0, 200));
         throw new Error("API returned invalid JSON/HTML");
       }
 
-      if (!response.ok || data.statusCode !== 202) {
-        console.error("API Error:", {
-          status: response.status,
-          statusText: response.statusText,
-          data,
-        });
-        return {
-          videos: [],
-          categoryName: displayName,
-          displayName,
-          currentPage: 1,
-          totalPages: 1,
-        };
-      }
+     if (!response.ok || response.status !== 202) {
+  console.error("API Error:", {
+    status: response.status,
+    statusText: response.statusText,
+    data,
+  });
+  return {
+    videos: [],
+    categoryName: displayName,
+    displayName,
+    currentPage: 1,
+    totalPages: 1,
+  };
+}
 
       return {
         videos: Array.isArray(data.data) ? data.data : [],

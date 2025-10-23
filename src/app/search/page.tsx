@@ -60,7 +60,7 @@ export default function SearchPage() {
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
-        <p className="mt-2">Searching for "{searchQuery}"...</p>
+        <p className="mt-2">Searching for &quot;{searchQuery}&quot;...</p>
       </div>
     );
   }
@@ -68,7 +68,7 @@ export default function SearchPage() {
   return (
     <div className="container-fluid px-2 px-sm-3 py-3">
       <h1 className="h5 mb-3 mb-md-4 text-center text-md-start">
-        Search: <span className="text-primary">"{searchQuery}"</span>
+        Search: <span className="text-primary">&quot;{searchQuery}&quot;</span>
       </h1>
       
       {isLoading ? (
@@ -77,7 +77,7 @@ export default function SearchPage() {
             <div className="spinner-border text-primary" style={{ width: '2.5rem', height: '2.5rem' }} role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
-            <p className="mt-2 mb-0 small">Searching for "{searchQuery}"</p>
+            <p className="mt-2 mb-0 small">Searching for &quot;{searchQuery}&quot;</p>
           </div>
         </div>
       ) : results.length > 0 ? (
