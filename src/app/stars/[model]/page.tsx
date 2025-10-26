@@ -3,34 +3,68 @@ import Link from 'next/link';
 import { API_ENDPOINTS } from '@/config/api';
 
 // Generate metadata dynamically based on model
-export async function generateMetadata({ params }: { params: { model: string } }): Promise<Metadata> {
-  const modelName = params.model.replace(/-/g, ' ');
+export async function generateMetadata({
+  params,
+}: {
+  params: { model: string };
+}): Promise<Metadata> {
+  // ✅ Await params first
+  const resolvedParams = await params;
+  const modelSlug = resolvedParams.model;
+
+  const modelName = modelSlug.replace(/-/g, ' ');
+
   const title = `${modelName} - Porn Videos & HD Sex Clips | XMilfNut`;
-  const description = `Watch the beauty ${modelName} porn videos in HD quality. Exclusive collection of ${modelName}'s best sex scenes . Best Porn Videos ${modelName} here  , updated daily.`;
-  
+  const description = `Watch the beauty ${modelName} porn videos in HD quality. Exclusive collection of ${modelName}'s best sex scenes, updated daily.`;
+
+  const keywords = [
+  title,
+  modelName,
+  `${modelName} Porn`,
+  `${modelName} xxxvideo`,
+  `${modelName} HD`,
+  `${modelName} Sex`,
+  `${modelName} Videos`,
+  `${modelName} sxyprn`,
+  `${modelName} fsiblog`,
+].filter(Boolean).join(', ');
+
   return {
-    title: title,
-    description: description,
-    keywords: `${modelName} porn, ${modelName} sex, ${modelName} videos, ${modelName} hd, ${modelName} xxx, ${modelName} fuck, ${modelName} naked, ${modelName} hardcore, ${modelName} anal, ${modelName} blowjob`,
+    title,
+    description,
+    keywords: keywords,
     authors: [{ name: 'xmilfnut' }],
     alternates: {
-      canonical: `https://xmilfnut.com/stars/${params.model}`,
+      canonical: `https://xmilfnut.com/stars/${modelSlug}`,
     },
+    publisher: 'xmilfnut',
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-video-preview': 'large',
+      }
+    },
+    
     openGraph: {
-      title: title,
-      description: description,
-      url: `https://xmilfnut.com/stars/${params.model}`,
+      title,
+      description,
+      url: `https://xmilfnut.com/stars/${modelSlug}`,
       siteName: 'xmilfnut',
       locale: 'en_US',
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: title,
-      description: description,
+      title,
+      description,
     },
   };
 }
+
 type Video = {
   _id: string;
   Titel: string;
@@ -111,9 +145,13 @@ export default async function ModelPage({
   params: { model: string };
   searchParams: { page?: string };
 }) {
-  const page = searchParams.page ? parseInt(searchParams.page as string, 10) : 1;
+   
+  const resolvedParams = await params;
+  const resolvedSearch = await searchParams;
+     const modelSlug = resolvedParams.model;
+  const page = resolvedSearch.page ? parseInt(resolvedSearch.page as string, 10) : 1;
   const { videos, modelName, displayName, currentPage, totalPages } = await getModelVideos(
-    params.model,
+    modelSlug,
     page
   );
 
@@ -199,7 +237,7 @@ export default async function ModelPage({
                 className={`page-item ${page === currentPage ? 'active' : ''}`}
               >
                 <Link
-                  href={`/stars/${params.model}?page=${page}`}
+                  href={`/stars/${modelSlug}?page=${page}`}
                   className="page-link"
                 >
                   {page}
@@ -217,7 +255,7 @@ export default async function ModelPage({
             "@context": "https://schema.org",
             "@type": "Person",
             "name": modelName,
-            "url": `https://xmilfnut.com/stars/${params.model}`,
+            "url": `https://xmilfnut.com/stars/${modelSlug}`,
             "jobTitle": "Adult Performer",
             "description": `Watch ${modelName}'s exclusive adult videos in HD quality.`,
             "image": videos[0]?.ImgUrl,

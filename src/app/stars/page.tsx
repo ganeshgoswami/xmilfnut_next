@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://xmilfnut.com/stars',
   },
+  publisher: 'xmilfnut',
   openGraph: {
     title: 'Popular Pornstars | XMilfNut - HD Porn Star Videos & Profiles',
     description: 'Discover the hottest pornstars in HD quality. Watch exclusive videos and explore detailed profiles of your favorite adult performers.',
@@ -20,6 +21,15 @@ export const metadata: Metadata = {
     locale: 'en_US',
     type: 'website',
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+    }
+  },
   twitter: {
     card: 'summary_large_image',
     title: 'Popular Pornstars | XMilfNut',
@@ -27,21 +37,36 @@ export const metadata: Metadata = {
   },
 };
 
+export const revalidate = 3600;
+
 type Pornstar = {
   _id: string;
   Name: string;
   Gender?: string;
   PImage?: string;
-   TotalVideos: number;
+  TotalVideos: number;
 };
 
-async function getPornstars() {
-  const res = await fetch(API_ENDPOINTS.PORSTARS, {
-    next: { revalidate: 3600 }, // revalidate every hour
-  });
-  if (!res.ok) throw new Error("Failed to fetch pornstars");
-  const json = await res.json();
-  return Array.isArray(json?.data) ? json.data as Pornstar[] : [];
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+async function getPornstars(): Promise<Pornstar[]> {
+  try {
+    const res = await fetch(API_BASE_URL + '/pornstars', {
+      next: { revalidate: 3600 }, 
+      
+    });
+    if (!res.ok) {
+      console.error(`Failed to fetch pornstars: ${res.status} ${res.statusText}`);
+      return [];
+    }
+    
+    const json = await res.json();
+    return Array.isArray(json?.data) ? json.data : [];
+  } catch (error) {
+    console.error('Error fetching pornstars:', error);
+    return [];
+  }
 }
 
 export default async function StarsPage() {

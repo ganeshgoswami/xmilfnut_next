@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
   return (
     <div className="container py-5">
       <h1 className="mb-4">Privacy Policy</h1>
-      
+
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body">
           <h5 className="card-title">1. Information We Collect</h5>
@@ -19,16 +19,14 @@ export default function PrivacyPolicy() {
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body">
           <h5 className="card-title">2. How We Use Your Information</h5>
-          <p className="card-text">
-            We may use the information we collect to:
-            <ul>
-              <li>Provide, maintain, and improve our services</li>
-              <li>Send you technical notices and support messages</li>
-              <li>Respond to your comments, questions, and requests</li>
-              <li>Send you promotional communications</li>
-              <li>Monitor and analyze trends and usage</li>
-            </ul>
-          </p>
+          <p className="card-text">We may use the information we collect to:</p>
+          <ul>
+            <li>Provide, maintain, and improve our services</li>
+            <li>Send you technical notices and support messages</li>
+            <li>Respond to your comments, questions, and requests</li>
+            <li>Send you promotional communications</li>
+            <li>Monitor and analyze trends and usage</li>
+          </ul>
         </div>
       </div>
 
@@ -46,7 +44,7 @@ export default function PrivacyPolicy() {
           <h5 className="card-title">4. Changes to This Policy</h5>
           <p className="card-text">
             We may update our Privacy Policy from time to time. We will notify you of any changes by posting 
-            the new Privacy Policy on this page and updating the "Last Updated" date.
+            the new Privacy Policy on this page and updating the &quot;Last Updated&quot; date.
           </p>
           <p className="text-muted">Last Updated: October 17, 2025</p>
         </div>

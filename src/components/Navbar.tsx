@@ -19,11 +19,11 @@ export default function Navbar() {
     }
   }, [open]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent | React.KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const query = searchQuery.trim();
     if (query) {
-      router.push(`/search?Search=${encodeURIComponent(query)}&page=1`);
+      router.push(`/search?q=${encodeURIComponent(query)}`);
       setOpen(false); // Close mobile menu after search
     }
   };

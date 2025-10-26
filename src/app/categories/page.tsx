@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://xmilfnut.com/categories',
   },
+  publisher: 'xmilfnut',
   openGraph: {
     title: 'Adult Video Categories | XMilfNut - Explore Porn Categories',
     description: 'Browse our extensive collection of adult video categories. Find your favorite porn categories in HD quality.',
@@ -19,6 +20,15 @@ export const metadata: Metadata = {
     siteName: 'xmilfnut',
     locale: 'en_US',
     type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+    }
   },
   twitter: {
     card: 'summary_large_image',
@@ -77,11 +87,7 @@ export default async function CategoriesPage() {
           <div key={category.category} className="col">
             <div className="card h-100 bg-dark text-white rounded-3 overflow-hidden">
               <Link 
-                href={{
-                  pathname: `/category/${category.category.toLowerCase().replace(/\s+/g, '-')}`,
-                  query: { original: category.category }
-                }}
-                as={`/category/${category.category.toLowerCase().replace(/\s+/g, '-')}`}
+                href={`/category/${category.category.toLowerCase().replace(/\s+/g, '-')}`}
                 className="text-decoration-none"
               >
                 <div className="position-relative w-100 overflow-hidden rounded-top-3" style={{ aspectRatio: "16/9" }}>

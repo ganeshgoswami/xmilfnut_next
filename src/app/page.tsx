@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://xmilfnut.com/',
   },
+  publisher: 'xmilfnut',
   openGraph: {
     title: 'XMilfNut - HD Adult Videos & Premium Porn Content',
     description: 'Watch the best HD adult videos and premium porn content. Daily updates with the latest content.',
@@ -55,16 +56,10 @@ type Item = {
 const ITEMS_PER_PAGE = 16;
 
 async function getData(page: number = 1) {
-  const envBase = (process.env.NEXT_PUBLIC_API_URL || "").trim();
-  let base = envBase;
-  if (!base) {
-    if (process.env.NEXT_PUBLIC_VERCEL_URL) {
-      base = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api`;
-    } else {
-      base = "http://localhost:3000/api";
-    }
-  }
-  const url = `${base.replace(/\/$/, "")}/alldata?page=${page}&limit=${ITEMS_PER_PAGE}`;
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    let base = API_BASE_URL;
+
+  const url = `${base?.replace(/\/$/, "")}/alldata?page=${page}&limit=${ITEMS_PER_PAGE}`;
   const res = await fetch(url, { next: { revalidate: 60 } });
   if (!res.ok) {
     
@@ -84,7 +79,12 @@ export default async function Home({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const currentPage = typeof searchParams?.page === 'string' ? parseInt(searchParams.page) : 1;
+   const resolvedParams = await searchParams; // ✅ Await before use
+  const currentPage =
+    typeof resolvedParams?.page === 'string'
+      ? parseInt(resolvedParams.page)
+      : 1;
+
   const { data: items, total } = await getData(currentPage);
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 

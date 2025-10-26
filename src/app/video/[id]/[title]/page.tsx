@@ -1,9 +1,12 @@
 import React from "react";
 import Link from "next/link";
-import { Metadata, ResolvingMetadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import Image from "next/image"; // Add this import
+import { Metadata } from "next"; // Remove ResolvingMetadata
+import { redirect } from "next/navigation"; // Remove notFound
 import VideoPlayer from "@/components/VideoPlayer";
 import "bootstrap-icons/font/bootstrap-icons.css";
+
+
 
 type Video = {
   _id: string;
@@ -19,17 +22,11 @@ type Video = {
 
 async function getVideo(id: string): Promise<Video | null> {
   try {
-    const envBase = (process.env.NEXT_PUBLIC_API_BASE_URL || "").trim();
-    let base = envBase;
-    if (!base) {
-      if (process.env.VERCEL_URL) {
-        base = `https://${process.env.VERCEL_URL}/api`;
-      } else {
-        base = "https://api.badwap.fun/api";
-      }
-    }
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    let base = API_BASE_URL;
+   
 
-    const url = `${base.replace(/\/$/, "")}/bigvideofind/${id}`;
+    const url = `${base?.replace(/\/$/, "")}/bigvideofind/${id}`;
     const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error("Failed to fetch video");
     const data = await res.json();
@@ -42,17 +39,11 @@ async function getVideo(id: string): Promise<Video | null> {
 
 async function getRelatedVideos(category: string): Promise<Video[]> {
   try {
-    const envBase = (process.env.NEXT_PUBLIC_API_BASE_URL || "").trim();
-    let base = envBase;
+     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    let base = API_BASE_URL;
 
-    if (!base) {
-      if (process.env.VERCEL_URL) {
-        base = `https://${process.env.VERCEL_URL}/api`;
-      } else {
-        base = "https://api.badwap.fun/api";
-      }
-    }
-    const url = `${base.replace(
+    
+    const url = `${base?.replace(
       /\/$/,
       ""
     )}/findrelatedData/${encodeURIComponent(category)}`;
@@ -67,101 +58,77 @@ async function getRelatedVideos(category: string): Promise<Video[]> {
   }
 }
 
-export async function generateMetadata(
-  { params }: { params: { id: string; title: string } }
-): Promise<Metadata> {
-  const video = await getVideo(params.id);
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string; title: string };
+}): Promise<Metadata> {
+  // ✅ Await params first
+  const resolvedParams = await params;
+  const { id, title } = resolvedParams;
+
+  const video = await getVideo(id);
 
   if (!video) {
     return {
-      title: "Video Not Found | XMilfNut",
-      description: "The requested video could not be found."
+      title: "Video Not Found",
+      description: "The requested video could not be found.",
     };
   }
 
-  // Generate clean title slug
-  const titleSlug = (video.Titel || "")
-    .toLowerCase()
+  const titleSlug = video.Titel?.toLowerCase()
     .replace(/[^\w\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-")
     .replace(/--+/g, "-");
 
-  // Redirect if the title in URL doesn't match the actual video title
-  if (params.title !== titleSlug) {
-    redirect(`/video/${params.id}/${titleSlug}`);
+  if (title !== titleSlug) {
+    redirect(`/video/${id}/${titleSlug}`);
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://xmilfnut.com";
-  const canonicalUrl = `${siteUrl}/video/${params.id}/${titleSlug}`;
-  const title = video.Titel || "Adult Video";
-  const description = video.Description || "Watch this adult video on XMilfNut";
-
-  const keywords = [
-    title,
-    video.Category,
-    video.Models,
-    "HD Porn",
-    "Sex Videos",
-    "Porn HD",
-    "Free Porn",
-    "XXX Videos",
-    "Adult Videos",
-  ]
-    .filter(Boolean)
-    .join(", ");
+  
+  const canonicalUrl = `/video/${id}/${titleSlug}`;
+  const metaTitle = video.Titel || "Adult Video";
+  const metaDescription = video.Description || "Watch this adult video on XMilfNut";
+ const keywords = [
+  metaTitle,
+  video.Category,
+  video.Models,
+  `HD Porn`,
+  'Sex Videos',
+  'Porn HD',
+  'Free Porn',
+  'XXX Videos',
+  'Adult Videos',
+].filter(Boolean).join(', ');
 
   return {
-    title: title,
-    description: description,
-    keywords: keywords,
-    authors: [{ name: "XMilfNut" }],
-    alternates: {
-      canonical: canonicalUrl,
+    title: metaTitle,
+    description: metaDescription,
+     keywords: keywords,
+  authors: [{ name: 'xmilfnut' }],
+    alternates: { canonical: canonicalUrl },
+    publisher: 'xmilfnut',
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+      }
     },
     openGraph: {
-      title: title,
-      description: description,
+      title: metaTitle,
+      description: metaDescription,
       url: canonicalUrl,
-      siteName: "XMilfNut",
-      locale: "en_US",
+      siteName: "xmilfnut",
       type: "video.other",
-      videos: [
-        {
-          url: video.Videourl || canonicalUrl,
-          type: "video/mp4",
-          width: "1280",
-          height: "720",
-        },
-      ],
-      images: [
-        {
-          url: video.ImgUrl || `${siteUrl}/default-thumbnail.jpg`,
-          width: 1280,
-          height: 720,
-          alt: video.Titel || "Adult Video Thumbnail",
-        },
-      ],
     },
     twitter: {
-      card: "player",
-      title: title,
-      description: description,
-      images: [video.ImgUrl || `${siteUrl}/default-thumbnail.jpg`],
-      players: [
-        {
-          playerUrl: canonicalUrl,
-          streamUrl: canonicalUrl, // Required for Twitter Player Cards
-          width: 1280,
-          height: 720,
-        },
-      ],
-    },
-    other: {
-      "og:video:type": "text/html",
-      "og:video:width": "1280",
-      "og:video:height": "720",
-      "og:video:secure_url": video.Videourl || canonicalUrl,
+      card: "summary_large_image",
+      title: metaTitle,
+      description: metaDescription,
     },
   };
 }
@@ -171,7 +138,10 @@ export default async function VideoPage({
 }: {
   params: { id: string; title: string };
 }) {
-  const video = await getVideo(params.id);
+
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+  const video = await getVideo(id);
 
   if (!video) {
     return (
