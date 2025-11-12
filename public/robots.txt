@@ -15,6 +15,3 @@ Disallow: /*/admin/
 
 # Sitemap location (important for SEO)
 Sitemap: https://xmilfnut.com/sitemap.xml
-
-# Host declaration (optional, improves crawl accuracy)
-Host: https://xmilfnut.com
